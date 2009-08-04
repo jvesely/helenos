@@ -1,0 +1,6 @@
+{
+	"fpu1",
+	"Intel FPU test",
+	&test_fpu1,
+	true
+},

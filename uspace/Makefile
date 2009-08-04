@@ -1,0 +1,89 @@
+#
+# Copyright (c) 2005 Martin Decky
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+#
+# - Redistributions of source code must retain the above copyright
+#   notice, this list of conditions and the following disclaimer.
+# - Redistributions in binary form must reproduce the above copyright
+#   notice, this list of conditions and the following disclaimer in the
+#   documentation and/or other materials provided with the distribution.
+# - The name of the author may not be used to endorse or promote products
+#   derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+# IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+# OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+# IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+# NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+# THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+
+## Include configuration
+#
+
+-include ../Makefile.config
+
+DIRS = \
+	lib/libc \
+	lib/libfs \
+	lib/libblock \
+	lib/softint \
+	lib/softfloat \
+	srv/bd/ata_bd \
+	srv/bd/file_bd \
+	srv/bd/gxe_bd \
+	srv/bd/rd \
+	srv/ns \
+	srv/loader \
+	srv/fb \
+	srv/kbd \
+	srv/console \
+	srv/fs/fat \
+	srv/fs/tmpfs \
+	srv/fs/devfs \
+	srv/vfs \
+	srv/devmap \
+	app/tetris \
+	app/tester \
+	app/trace \
+	app/klog \
+	app/init \
+	app/getvc \
+	app/bdsh
+
+ifeq ($(UARCH),amd64)
+	DIRS += srv/pci
+endif
+
+ifeq ($(UARCH),ia32)
+	DIRS += srv/pci
+endif
+
+ifeq ($(UARCH),sparc64)
+	DIRS += \
+		srv/cir/fhc \
+		srv/cir/obio
+endif
+
+BUILDS := $(addsuffix .build,$(DIRS))
+CLEANS := $(addsuffix .clean,$(DIRS))
+
+.PHONY: all $(BUILDS) $(CLEANS) clean
+
+all: ../Makefile.config ../config.h ../config.defs $(BUILDS)
+
+clean: $(CLEANS)
+
+$(CLEANS):
+	-$(MAKE) -C $(basename $@) clean
+
+$(BUILDS):
+	$(MAKE) -C $(basename $@) all
